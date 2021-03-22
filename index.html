@@ -114,6 +114,9 @@
                        
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <h4 style="color: red;">Attention - As it was not mentioned how to weigh values of each experiments thus currently the app weighs each experiment with equal weight.</h4>
+                  </div>
 
             </div>
             <!-- /.modal-content -->
@@ -8738,8 +8741,7 @@
             $(".average span").text(avg);
             $(".category span").text(category);
             $(".error span").text(error);
-            $(".caverage span").text(avg);
-            $(".cerror span").text(error);
+            
         });
 
 
@@ -8751,10 +8753,10 @@
             $('.inlineRadio:checkbox:checked').each(function (i, v) {
                 var ind = parseInt(v.value.indexOf('$'));
                 avg = avg + parseFloat(v.value.slice(0, ind));
-                err = err + parseFloat(v.value.slice(ind + 1,));
+                err = err + parseFloat(v.value.slice(ind + 1,))**2;
             });
             avg = avg / l;
-            err = err / l;
+            err = err ** 0.5 ;
             $(".mes").hide();
             $(".caverage span").text(avg);
             $(".cerror span").text(err);
@@ -8767,6 +8769,8 @@
             $('#sub').show();
             $('#back').hide();
             $(".mes").show();
+            $(".caverage span").text('');
+            $(".cerror span").text('');
         });
     });
 
