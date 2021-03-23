@@ -1,5 +1,5 @@
 # hflav - Beauty to Charm
-### Live Demo - https://hflav.herokuapp.com/
+### Live Demo - https://unruffled-pike-74a80a.netlify.app/
 ### Technologies used and work done
 <h4> HTML, CSS , jQUERY , MATHJAX (FOR LATEX) , DATATABLES (FOR TABLES) , GOOGLE CHARTS (FOR CHARTS) </h4>
 
