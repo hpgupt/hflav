@@ -8507,6 +8507,7 @@ $(document).ready(function () {
     var dttable = $('#example').DataTable({
         data: jsonData,
         stateSave: true,
+        responsive: true,
         drawCallback: function () {
             $('.paginate_button', this.api().table().container())
                 .on('click', function () {
