@@ -3,6 +3,7 @@
 
 <head>
     <title>hflav</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="text/javascript" charset="utf8"
@@ -14,9 +15,12 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
         </script>
 
+
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
       </script>
+
+
     <style>
         #mt td {
             background-color: lime;
@@ -90,33 +94,36 @@
                         <h4>Error(Calculated as per selections): </h4><span style="color: red;"></span>
                     </div>
                     <div> <button type="button" style="color: violet;" id="sub">Find Average</button></div>
-                    <div> <button type="button" style="color: violet; display: none;" id="back">Back to List of experiments</button></div>
-                    <div>
-                        
-                        <div class="mes">
-                            <div>
-                                <h4> List of experiments</h4><br>
-                            </div>
-                            <table id="mt">
-                                <thead>
-                                    <tr>
-                                        <th>Experiment No.</th>
-                                        <th>Value</th>
-                                        <th>Error</th>
-                                        <th>Select for average</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                    <div class="chart" id="chart_div" style="display: none;"></div>
+                    <div> <button type="button" style="color: violet; display: none;" id="back">Back to List of
+                            experiments</button></div>
 
-                                </tbody>
+
+                    <div class="mes">
+                        <div>
+                            <h4> List of experiments</h4><br>
                         </div>
+                        <table id="mt">
+                            <thead>
+                                <tr>
+                                    <th>Experiment No.</th>
+                                    <th>Value</th>
+                                    <th>Error</th>
+                                    <th>Select for average</th>
+                                </tr>
+                            </thead>
+                            <tbody>
 
-                       
+                            </tbody>
                     </div>
+
                 </div>
+
+
                 <div class="modal-footer">
-                    <h4 style="color: red;">Attention - As it was not mentioned how to weigh values of each experiments thus currently the app weighs each experiment with equal weight.</h4>
-                  </div>
+                    <h4 style="color: red;">Attention - As it was not mentioned how to weigh values of each experiments
+                        thus currently the app weighs each experiment with equal weight.</h4>
+                </div>
 
             </div>
             <!-- /.modal-content -->
@@ -125,6 +132,9 @@
     </div>
 </body>
 <script>
+    google.charts.load("current", {
+        packages: ['corechart']
+    });
     var dict = {
         'Bd/D': 'B0 decays to single charm mesons',
         'Bd/DD': 'B0 decays to two charm mesons',
@@ -8741,7 +8751,7 @@
             $(".average span").text(avg);
             $(".category span").text(category);
             $(".error span").text(error);
-            
+
         });
 
 
@@ -8749,18 +8759,66 @@
             e.preventDefault();
             var avg = 0.0;
             var err = 0.0;
+            var arr1 = [];
             var l = $('.inlineRadio:checkbox:checked').length;
             $('.inlineRadio:checkbox:checked').each(function (i, v) {
+                var arr2 = [];
                 var ind = parseInt(v.value.indexOf('$'));
                 avg = avg + parseFloat(v.value.slice(0, ind));
-                err = err + parseFloat(v.value.slice(ind + 1,))**2;
+                err = err + parseFloat(v.value.slice(ind + 1,)) ** 2;
+                arr2.push(String(i), parseFloat(v.value.slice(0, ind)));
+                arr1.push(arr2);
             });
             avg = avg / l;
-            err = err ** 0.5 ;
+            err = err ** 0.5;
             $(".mes").hide();
+            $("#chart_div").show();
             $(".caverage span").text(avg);
             $(".cerror span").text(err);
             $('#back').show();
+
+            var data = google.visualization.arrayToDataTable([
+                ['ExperimentNo', 'Value'],
+                ['Average', avg],
+
+            ]);
+
+            $(arr1).each(function (i, v) {
+                data.addRow(v);
+            });
+
+            var options = {
+                chart: {
+                    title: 'Diferent Experiments with their average and Values'
+                },
+                chartArea: { width: '65%' },
+                hAxis: {
+                    title: 'Value',
+                    minValue: 0,
+                },
+                vAxis: {
+                    title: 'Experiment Number'
+                },
+                bars: 'horizontal'
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+
+            if (navigator.userAgent.match(/Trident\/7\./)) {
+                google.visualization.events.addListener(chart, 'click', function () {
+                    chart_div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+                    console.log(chart_div.innerHTML);
+                });
+                chart.draw(data, options);
+            } else {
+                google.visualization.events.addListener(chart, 'select png', function () {
+                    chart_div.innerHTML = '<img src="' + chart.getImageURI() + '">';
+                    console.log(chart_div.innerHTML);
+                });
+                chart.draw(data, options);
+
+            }
+
             $('#sub').hide();
         });
 
@@ -8768,6 +8826,7 @@
             e.preventDefault();
             $('#sub').show();
             $('#back').hide();
+            $("#chart_div").hide();
             $(".mes").show();
             $(".caverage span").text('');
             $(".cerror span").text('');
